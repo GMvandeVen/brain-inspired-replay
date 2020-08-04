@@ -1,0 +1,11 @@
+store/datasets/
+store/plots/
+store/results/
+store/models/
+
+.env
+__pycache__/
+.idea/
+
+docker/
+notebooks/
