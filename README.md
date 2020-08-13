@@ -1,7 +1,7 @@
 # Brain-Inspired Replay
 A PyTorch implementation of the continual learning experiments with deep neural networks described in the 
 following paper:
-* Brain-inspired replay for continual learning with artificial neural networks (link-to-be-added)
+* Brain-inspired replay for continual learning with artificial neural networks ([link](https://rdcu.be/b6e03))
 
 This paper proposes a new, brain-inspired version of generative replay that can scale to continual learning problems with natural images as inputs.
 This is demonstrated with the Split CIFAR-100 protocol, both for task-incremental learning and for class-incremental learning.
@@ -103,8 +103,8 @@ Please consider citing our paper if you use this code in your research:
   title={Brain-inspired replay for continual learning with artificial neural networks},
   author={van de Ven, Gido M and Siegelmann, Hava T and Tolias, Andreas S},
   journal={Nature Communications},
-  volume={...},
-  pages={...}
+  volume={11},
+  pages={4069},
   year={2020}
 }
 ```
