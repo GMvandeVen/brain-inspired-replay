@@ -405,12 +405,13 @@ def run(args, verbose=False):
         # -load pretrained weights
         eval_tag = "" if args.eval_tag=="none" else "-{}".format(args.eval_tag)
         try:
-            utils.load_checkpoint(pretrained_classifier, args.m_dir, verbose=False,
+            utils.load_checkpoint(pretrained_classifier, args.m_dir, verbose=True,
                                   name="{}{}".format(pretrained_classifier.name, eval_tag))
             FileFound = True
         except FileNotFoundError:
             if verbose:
-                print("= model for evaluating generator not found; IS, FID and Precision & Recall not computed =")
+                print("= Could not find model {}{} in {}".format(pretrained_classifier.name, eval_tag, args.m_dir))
+                print("= IS, FID and Precision & Recall not computed!")
             FileFound = False
         pretrained_classifier.eval()
 
