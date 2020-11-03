@@ -346,7 +346,7 @@ def set_defaults(args, only_MNIST=False, single_task=False, generative=True, com
             args.g_fc_uni = args.fc_units if args.g_fc_uni is None else args.g_fc_uni
         if hasattr(args, "g_h_dim"):
             args.g_h_dim = args.g_fc_uni if args.g_h_dim is None else args.g_h_dim
-    if not single_task:
+    if (not single_task) and (not compare_code in ('hyper')):
         args.xdg_prop = 0. if args.scenario=="task" and args.xdg_prop is None else args.xdg_prop
     # -if [log_per_task] (which is default for comparison-scripts), reset all logs
     if not single_task:
