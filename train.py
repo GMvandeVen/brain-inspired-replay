@@ -227,7 +227,7 @@ def train_cl(model, train_datasets, replay_mode="none", scenario="task", rnt=Non
                     # -which classes are allowed to be generated? (relevant if conditional generator / decoder-gates)
                     allowed_classes = None if scenario=="domain" else list(range(classes_per_task*(task-1)))
                     # -which tasks/domains are allowed to be generated? (only relevant if "Domain-IL" with task-gates)
-                    allowed_domains = list(range(task))
+                    allowed_domains = list(range(task-1))
                     # -generate inputs representative of previous tasks
                     x_temp_ = previous_generator.sample(
                         batch_size_replay, allowed_classes=allowed_classes, allowed_domains=allowed_domains,
