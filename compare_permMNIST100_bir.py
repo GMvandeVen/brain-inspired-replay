@@ -26,6 +26,7 @@ def handle_inputs():
     args = parser.parse_args()
     args.scenario = "domain"
     args.experiment = "permMNIST"
+    args.xdg_prop = 0
     options.set_defaults(args, **kwargs)
     return args
 

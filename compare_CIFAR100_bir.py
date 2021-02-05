@@ -24,6 +24,7 @@ def handle_inputs():
     parser = options.add_bir_options(parser, **kwargs)
     # Parse and process (i.e., set defaults for unselected options) options
     args = parser.parse_args()
+    args.xdg_prop = 0
     options.set_defaults(args, **kwargs)
     return args
 
