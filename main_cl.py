@@ -352,10 +352,14 @@ def run(args, verbose=False):
     average_precs = sum(precs)/args.tasks
     # -print on screen
     if verbose:
-        print("\n Precision on test-set:")
+        print("\n Accuracy of final model on test-set:")
         for i in range(args.tasks):
-            print(" - Task {}: {:.4f}".format(i + 1, precs[i]))
-        print('=> Average precision over all {} tasks: {:.4f}\n'.format(args.tasks, average_precs))
+            print(" - {} {}: {:.4f}".format("For classes from task" if args.scenario=="class" else "Task",
+                                            i + 1, precs[i]))
+        print('=> Average accuracy over all {} {}: {:.4f}\n'.format(
+            args.tasks*classes_per_task if args.scenario=="class" else args.tasks,
+            "classes" if args.scenario=="class" else "tasks", average_precs
+        ))
     # -write out to text file
     output_file = open("{}/prec-{}.txt".format(args.r_dir, param_stamp), 'w')
     output_file.write('{}\n'.format(average_precs))
@@ -501,17 +505,23 @@ def run(args, verbose=False):
             figure_list = []
             # -generate figures (and store them in [figure_list])
             figure = evaluate.visual.plt.plot_lines(
-                precision_dict["all_tasks"], x_axes=precision_dict["x_task"],
-                line_names=['{} {}'.format("episode" if args.scenario=="class" else "task",
-                                           i+1) for i in range(args.tasks)],
-                xlabel="# of {}s".format("episode" if args.scenario=="class" else "task"), ylabel="Test accuracy"
+                precision_dict["all_tasks"], x_axes=[
+                    i*classes_per_task for i in precision_dict["x_task"]
+                ] if args.scenario=="class" else precision_dict["x_task"],
+                line_names=['{} {}'.format(
+                    "episode / task" if args.scenario=="class" else "task", i+1
+                ) for i in range(args.tasks)],
+                xlabel="# of {}s so far".format("classe" if args.scenario=="class" else "task"), ylabel="Test accuracy"
             )
             figure_list.append(figure)
             figure = evaluate.visual.plt.plot_lines(
-                [precision_dict["average"]], x_axes=precision_dict["x_task"],
+                [precision_dict["average"]], x_axes=[
+                    i*classes_per_task for i in precision_dict["x_task"]
+                ] if args.scenario=="class" else precision_dict["x_task"],
                 line_names=['Average based on all {}s so far'.format(
                     ("digit" if args.experiment=="splitMNIST" else "classe") if args.scenario else "task"
-                )], xlabel="# of {}s".format("episode" if args.scenario=="class" else "task"), ylabel="Test accuracy"
+                )], xlabel="# of {}s so far".format("classe" if args.scenario=="class" else "task"),
+                ylabel="Test accuracy"
             )
             figure_list.append(figure)
             # -add figures to pdf
