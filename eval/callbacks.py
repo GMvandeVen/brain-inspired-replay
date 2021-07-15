@@ -38,13 +38,13 @@ def _sample_cb(log, config, visdom=None, pdf=None, test_datasets=None, sample_si
 
 
 
-def _eval_cb(log, test_datasets, visdom=None, precision_dict=None, iters_per_task=None, test_size=None,
+def _eval_cb(log, test_datasets, visdom=None, progress_dict=None, iters_per_task=None, test_size=None,
              classes_per_task=None, scenario="none"):
-    '''Initiates function for evaluating performance of classifier (in terms of precision).
+    '''Initiates function for evaluating performance of classifier (in terms of accuracy).
 
     [test_datasets]     <list> of <Datasets>; also if only 1 task, it should be presented as a list!
     [classes_per_task]  <int> number of "active" classes per task
-    [scenario]          <str> how to decide which classes to include during evaluating precision'''
+    [scenario]          <str> for how to decide which classes to include during evaluation'''
 
     def eval_cb(classifier, batch, task=1, **kwargs):
         '''Callback-function, to evaluate performance of classifier.'''
@@ -53,12 +53,12 @@ def _eval_cb(log, test_datasets, visdom=None, precision_dict=None, iters_per_tas
 
         # evaluate the solver on multiple tasks (and log to visdom)
         if iteration % log == 0:
-            evaluate.precision(classifier, test_datasets, task, iteration,
-                               classes_per_task=classes_per_task, scenario=scenario, precision_dict=precision_dict,
-                               test_size=test_size, visdom=visdom)
+            evaluate.test_accuracy(classifier, test_datasets, task, iteration,
+                                   classes_per_task=classes_per_task, scenario=scenario, progress_dict=progress_dict,
+                                   test_size=test_size, visdom=visdom)
 
-    ## Return the callback-function (except if neither visdom or [precision_dict] is selected!)
-    return eval_cb if ((visdom is not None) or (precision_dict is not None)) else None
+    ## Return the callback-function (except if neither visdom or [progress_dict] is selected!)
+    return eval_cb if ((visdom is not None) or (progress_dict is not None)) else None
 
 
 
@@ -111,8 +111,8 @@ def _solver_loss_cb(log, visdom, model=None, tasks=None, iters_per_task=None, ep
             task_stm = "" if (tasks is None) else " Task: {}/{} |".format(task, tasks)
             epoch_stm = "" if ((epochs is None) or (epoch is None)) else " Epoch: {}/{} |".format(epoch, epochs)
             bar.set_description(
-                ' <MAIN MODEL> |{t_stm}{e_stm} training loss: {loss:.3} | training precision: {prec:.3} |'
-                    .format(t_stm=task_stm, e_stm=epoch_stm, loss=loss_dict['loss_total'], prec=loss_dict['precision'])
+                ' <MAIN MODEL> |{t_stm}{e_stm} training loss: {loss:.3} | training accuracy: {prec:.3} |'
+                    .format(t_stm=task_stm, e_stm=epoch_stm, loss=loss_dict['loss_total'], prec=loss_dict['accuracy'])
             )
             bar.update(1)
         ##-----------------------------------------------------------------------------##
@@ -165,8 +165,8 @@ def _VAE_loss_cb(log, visdom, model, tasks=None, iters_per_task=None, epochs=Non
             task_stm = "" if (tasks is None) else " Task: {}/{} |".format(task, tasks)
             epoch_stm = "" if ((epochs is None) or (epoch is None)) else " Epoch: {}/{} |".format(epoch, epochs)
             bar.set_description(
-                ' <GENERATOR>  |{t_stm}{e_stm} training loss: {loss:.3} | training precision: {prec:.3} |'
-                    .format(t_stm=task_stm, e_stm=epoch_stm, loss=loss_dict['loss_total'], prec=loss_dict['precision'])
+                ' <GENERATOR>  |{t_stm}{e_stm} training loss: {loss:.3} | training accuracy: {prec:.3} |'
+                    .format(t_stm=task_stm, e_stm=epoch_stm, loss=loss_dict['loss_total'], prec=loss_dict['accuracy'])
             )
             bar.update(1)
         ##-----------------------------------------------------------------------------##

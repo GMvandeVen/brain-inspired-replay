@@ -162,15 +162,15 @@ class Classifier(ContinualLearner):
             # Weigh losses
             loss_cur = predL
 
-            # Calculate training-precision
-            precision = None if y is None else (y == y_hat.max(1)[1]).sum().item() / x.size(0)
+            # Calculate training-accuracy
+            accuracy = None if y is None else (y == y_hat.max(1)[1]).sum().item() / x.size(0)
 
             # If XdG is combined with replay, backward-pass needs to be done before new task-mask is applied
             if (self.mask_dict is not None) and (x_ is not None):
                 weighted_current_loss = rnt*loss_cur
                 weighted_current_loss.backward()
         else:
-            precision = predL = None
+            accuracy = predL = None
             # -> it's possible there is only "replay" [i.e., for offline with incremental task learning scenario]
 
 
@@ -263,6 +263,6 @@ class Classifier(ContinualLearner):
             'pred_r': sum(predL_r).item()/n_replays if (x_ is not None and predL_r[0] is not None) else 0,
             'distil_r': sum(distilL_r).item()/n_replays if (x_ is not None and distilL_r[0] is not None) else 0,
             'ewc': ewc_loss.item(), 'si_loss': surrogate_loss.item(),
-            'precision': precision if precision is not None else 0.,
+            'accuracy': accuracy if accuracy is not None else 0.,
         }
 

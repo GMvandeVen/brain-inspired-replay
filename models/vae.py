@@ -745,7 +745,7 @@ class AutoEncoder(ContinualLearner):
 
 
         ##--(1)-- CURRENT DATA --##
-        precision = 0.
+        accuracy = 0.
         if x is not None:
             # If requested, apply correct task-specific mask
             if self.mask_dict is not None:
@@ -777,10 +777,10 @@ class AutoEncoder(ContinualLearner):
             # Weigh losses as requested
             loss_cur = self.lamda_rcl*reconL + self.lamda_vl*variatL + self.lamda_pl*predL
 
-            # Calculate training-precision
+            # Calculate training-accuracy
             if y is not None and y_hat is not None:
                 _, predicted = y_hat.max(1)
-                precision = (y == predicted).sum().item() / x.size(0)
+                accuracy = (y == predicted).sum().item() / x.size(0)
 
             # If XdG is combined with replay, backward-pass needs to be done before new task-mask is applied
             if (self.mask_dict is not None) and (x_ is not None):
@@ -909,7 +909,7 @@ class AutoEncoder(ContinualLearner):
 
         # Return the dictionary with different training-loss split in categories
         return {
-            'loss_total': loss_total.item(), 'precision': precision,
+            'loss_total': loss_total.item(), 'accuracy': accuracy,
             'recon': reconL.item() if x is not None else 0,
             'variat': variatL.item() if x is not None else 0,
             'pred': predL.item() if x is not None else 0,

@@ -14,7 +14,7 @@ import utils
 
 def validate(model, dataset, batch_size=128, test_size=1024, verbose=True, allowed_classes=None,
              no_task_mask=False, task=None):
-    '''Evaluate precision (= accuracy or proportion correct) of a classifier ([model]) on [dataset].
+    '''Evaluate the accuracy (= proportion of samples classified correctly) of a classifier ([model]) on [dataset].
 
     [allowed_classes]   None or <list> containing all "active classes" between which should be chosen
                             (these "active classes" are assumed to be contiguous)'''
@@ -51,31 +51,31 @@ def validate(model, dataset, batch_size=128, test_size=1024, verbose=True, allow
         # -update statistics
         total_correct += (predicted == labels).sum().item()
         total_tested += len(data)
-    precision = total_correct / total_tested
+    accuracy = total_correct / total_tested
 
     # Print result on screen (if requested) and return it
     if verbose:
-        print('=> precision: {:.3f}'.format(precision))
-    return precision
+        print('=> accuracy: {:.3f}'.format(accuracy))
+    return accuracy
 
 
-def initiate_precision_dict(n_tasks):
-    '''Initiate <dict> with all precision-measures to keep track of.'''
-    precision = {}
-    precision["all_tasks"] = [[] for _ in range(n_tasks)]
-    precision["average"] = []
-    precision["x_iteration"] = []
-    precision["x_task"] = []
-    return precision
+def initiate_progress_dict(n_tasks):
+    '''Initiate <dict> with all accuracy-measures to keep track of.'''
+    progress_dict = {}
+    progress_dict["all_tasks"] = [[] for _ in range(n_tasks)]
+    progress_dict["average"] = []
+    progress_dict["x_iteration"] = []
+    progress_dict["x_task"] = []
+    return progress_dict
 
 
-def precision(model, datasets, current_task, iteration, classes_per_task=None, scenario="none",
-              precision_dict=None, test_size=None, visdom=None, verbose=False, no_task_mask=False):
-    '''Evaluate precision of a classifier (=[model]) on all tasks so far (= up to [current_task]) using [datasets].
+def test_accuracy(model, datasets, current_task, iteration, classes_per_task=None, scenario="none",
+                  progress_dict=None, test_size=None, visdom=None, verbose=False, no_task_mask=False):
+    '''Evaluate accuracy of a classifier (=[model]) on all tasks so far (= up to [current_task]) using [datasets].
 
-    [precision_dict]    None or <dict> of all measures to keep track of, to which results will be appended to
+    [progress_dict]    None or <dict> of all measures to keep track of, to which results will be appended to
     [classes_per_task]  <int> number of active classes er task
-    [scenario]          <str> how to decide which classes to include during evaluating precision
+    [scenario]          <str> for how to decide which classes to include during evaluation
     [visdom]            None or <dict> with name of "graph" and "env" (if None, no visdom-plots are made)'''
 
     # Evaluate accuracy of model predictions for all tasks so far (reporting "0" for future tasks)
@@ -99,29 +99,29 @@ def precision(model, datasets, current_task, iteration, classes_per_task=None, s
 
     # Print results on screen
     if verbose:
-        print(' => ave precision: {:.3f}'.format(average_precs))
+        print(' => ave accuracy: {:.3f}'.format(average_precs))
 
     # Send results to visdom server
     names = ['task {}'.format(i + 1) for i in range(n_tasks)]
     if visdom is not None:
         visual.visdom.visualize_scalars(
             scalars=precs, names=names, iteration=iteration,
-            title="Accuracy per task ({})".format(visdom["graph"]), env=visdom["env"], ylabel="precision"
+            title="Accuracy per task ({})".format(visdom["graph"]), env=visdom["env"], ylabel="accuracy"
         )
         if n_tasks>1:
             visual.visdom.visualize_scalars(
-                scalars=[average_precs], names=["ave precision"], iteration=iteration,
-                title="Average accuracy ({})".format(visdom["graph"]), env=visdom["env"], ylabel="precision"
+                scalars=[average_precs], names=["ave accuracy"], iteration=iteration,
+                title="Average accuracy ({})".format(visdom["graph"]), env=visdom["env"], ylabel="accuracy"
             )
 
     # Append results to [progress]-dictionary and return
-    if precision_dict is not None:
+    if progress_dict is not None:
         for task_id, _ in enumerate(names):
-            precision_dict["all_tasks"][task_id].append(precs[task_id])
-        precision_dict["average"].append(average_precs)
-        precision_dict["x_iteration"].append(iteration)
-        precision_dict["x_task"].append(current_task)
-    return precision_dict
+            progress_dict["all_tasks"][task_id].append(precs[task_id])
+        progress_dict["average"].append(average_precs)
+        progress_dict["x_iteration"].append(iteration)
+        progress_dict["x_task"].append(current_task)
+    return progress_dict
 
 
 

@@ -208,8 +208,8 @@ def run(args, verbose=False):
         if generator is not None:
             utils.print_model_info(generator, title="GENERATOR")
 
-    # Define [progress_dicts] to keep track of performance during training for storing and for later plotting in pdf
-    precision_dict = evaluate.initiate_precision_dict(args.tasks)
+    # Define [progress_dict] to keep track of performance during training for storing and for later plotting in pdf
+    progress_dict = evaluate.initiate_progress_dict(args.tasks)
 
     # Prepare for plotting in visdom
     visdom = None
@@ -269,12 +269,12 @@ def run(args, verbose=False):
     # Callbacks for reporting and visualizing accuracy, and visualizing representation extracted by main model
     # -visdom (i.e., after each [prec_log]
     eval_cb = cb._eval_cb(
-        log=args.prec_log, test_datasets=test_datasets, visdom=visdom, precision_dict=None, iters_per_task=args.iters,
+        log=args.prec_log, test_datasets=test_datasets, visdom=visdom, progress_dict=None, iters_per_task=args.iters,
         test_size=args.prec_n, classes_per_task=classes_per_task, scenario=args.scenario,
     )
     # -pdf / reporting: summary plots (i.e, only after each task)
     eval_cb_full = cb._eval_cb(
-        log=args.iters, test_datasets=test_datasets, precision_dict=precision_dict,
+        log=args.iters, test_datasets=test_datasets, progress_dict=progress_dict,
         iters_per_task=args.iters, classes_per_task=classes_per_task, scenario=args.scenario,
     )
     # -visualize feature space
@@ -306,7 +306,7 @@ def run(args, verbose=False):
         )
         # Save evaluation metrics measured throughout training
         file_name = "{}/dict-{}".format(args.r_dir, param_stamp)
-        utils.save_object(precision_dict, file_name)
+        utils.save_object(progress_dict, file_name)
         # Save trained model(s), if requested
         if args.save:
             save_name = "mM-{}".format(param_stamp) if (
@@ -344,7 +344,7 @@ def run(args, verbose=False):
     if verbose:
         print("\n\nEVALUATION RESULTS:")
 
-    # Evaluate precision of final model on full test-set
+    # Evaluate accuracy of final model on full test-set
     precs = [evaluate.validate(
         model, test_datasets[i], verbose=False, test_size=None, task=i+1,
         allowed_classes=list(range(classes_per_task*i, classes_per_task*(i+1))) if args.scenario=="task" else None
@@ -505,9 +505,9 @@ def run(args, verbose=False):
             figure_list = []
             # -generate figures (and store them in [figure_list])
             figure = evaluate.visual.plt.plot_lines(
-                precision_dict["all_tasks"], x_axes=[
-                    i*classes_per_task for i in precision_dict["x_task"]
-                ] if args.scenario=="class" else precision_dict["x_task"],
+                progress_dict["all_tasks"], x_axes=[
+                    i*classes_per_task for i in progress_dict["x_task"]
+                ] if args.scenario=="class" else progress_dict["x_task"],
                 line_names=['{} {}'.format(
                     "episode / task" if args.scenario=="class" else "task", i+1
                 ) for i in range(args.tasks)],
@@ -515,9 +515,9 @@ def run(args, verbose=False):
             )
             figure_list.append(figure)
             figure = evaluate.visual.plt.plot_lines(
-                [precision_dict["average"]], x_axes=[
-                    i*classes_per_task for i in precision_dict["x_task"]
-                ] if args.scenario=="class" else precision_dict["x_task"],
+                [progress_dict["average"]], x_axes=[
+                    i*classes_per_task for i in progress_dict["x_task"]
+                ] if args.scenario=="class" else progress_dict["x_task"],
                 line_names=['Average based on all {}s so far'.format(
                     ("digit" if args.experiment=="splitMNIST" else "classe") if args.scenario else "task"
                 )], xlabel="# of {}s so far".format("classe" if args.scenario=="class" else "task"),
