@@ -122,7 +122,7 @@ def run(args):
     utils.print_model_info(cnn, title="CLASSIFIER")
 
     # Define [progress_dicts] to keep track of performance during training for storing and for later plotting in pdf
-    precision_dict = evaluate.initiate_precision_dict(n_tasks=1)
+    progress_dict = evaluate.initiate_progress_dict(n_tasks=1)
 
     # Prepare for plotting in visdom
     graph_name = cnn.name
@@ -135,13 +135,13 @@ def run(args):
     #---------------------#
 
     # Determine after how many iterations to evaluate the model
-    eval_log = args.prec_log if (args.prec_log is not None) else len(train_loader)
+    eval_log = args.acc_log if (args.acc_log is not None) else len(train_loader)
 
     # Define callback-functions to evaluate during training
     # -loss
     loss_cbs = [cb._solver_loss_cb(log=args.loss_log, visdom=visdom, epochs=epochs)]
-    # -precision
-    eval_cb = cb._eval_cb(log=eval_log, test_datasets=[testset], visdom=visdom, precision_dict=precision_dict)
+    # -accuracy
+    eval_cb = cb._eval_cb(log=eval_log, test_datasets=[testset], visdom=visdom, progress_dict=progress_dict)
     # -visualize extracted representation
     latent_space_cb = cb._latent_space_cb(log=min(5*eval_log, iters), datasets=[testset], visdom=visdom,
                                           sample_size=400)
@@ -186,9 +186,9 @@ def run(args):
         # -Fig1: show some images
         images, _ = next(iter(train_loader))            #--> get a mini-batch of random training images
         plt.plot_images_from_tensor(images, pp, title="example input images", config=config)
-        # -Fig2: precision
-        figure = plt.plot_lines(precision_dict["all_tasks"], x_axes=precision_dict["x_iteration"],
-                                line_names=['ave precision'], xlabel="Iterations", ylabel="Test accuracy")
+        # -Fig2: accuracy
+        figure = plt.plot_lines(progress_dict["all_tasks"], x_axes=progress_dict["x_iteration"],
+                                line_names=['ave accuracy'], xlabel="Iterations", ylabel="Test accuracy")
         pp.savefig(figure)
         # -close pdf
         pp.close()

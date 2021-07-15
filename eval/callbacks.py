@@ -111,8 +111,8 @@ def _solver_loss_cb(log, visdom, model=None, tasks=None, iters_per_task=None, ep
             task_stm = "" if (tasks is None) else " Task: {}/{} |".format(task, tasks)
             epoch_stm = "" if ((epochs is None) or (epoch is None)) else " Epoch: {}/{} |".format(epoch, epochs)
             bar.set_description(
-                ' <MAIN MODEL> |{t_stm}{e_stm} training loss: {loss:.3} | training accuracy: {prec:.3} |'
-                    .format(t_stm=task_stm, e_stm=epoch_stm, loss=loss_dict['loss_total'], prec=loss_dict['accuracy'])
+                ' <MAIN MODEL> |{t_stm}{e_stm} training loss: {loss:.3} | training accuracy: {acc:.3} |'
+                    .format(t_stm=task_stm, e_stm=epoch_stm, loss=loss_dict['loss_total'], acc=loss_dict['accuracy'])
             )
             bar.update(1)
         ##-----------------------------------------------------------------------------##
@@ -165,8 +165,8 @@ def _VAE_loss_cb(log, visdom, model, tasks=None, iters_per_task=None, epochs=Non
             task_stm = "" if (tasks is None) else " Task: {}/{} |".format(task, tasks)
             epoch_stm = "" if ((epochs is None) or (epoch is None)) else " Epoch: {}/{} |".format(epoch, epochs)
             bar.set_description(
-                ' <GENERATOR>  |{t_stm}{e_stm} training loss: {loss:.3} | training accuracy: {prec:.3} |'
-                    .format(t_stm=task_stm, e_stm=epoch_stm, loss=loss_dict['loss_total'], prec=loss_dict['accuracy'])
+                ' <GENERATOR>  |{t_stm}{e_stm} training loss: {loss:.3} | training accuracy: {acc:.3} |'
+                    .format(t_stm=task_stm, e_stm=epoch_stm, loss=loss_dict['loss_total'], acc=loss_dict['accuracy'])
             )
             bar.update(1)
         ##-----------------------------------------------------------------------------##

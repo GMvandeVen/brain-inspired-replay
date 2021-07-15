@@ -43,13 +43,13 @@ def get_result(args):
     # -get param-stamp
     param_stamp = get_param_stamp_from_args(args)
     # -check whether already run, and if not do so
-    if os.path.isfile('{}/prec-{}.txt'.format(args.r_dir, param_stamp)):
+    if os.path.isfile('{}/acc-{}.txt'.format(args.r_dir, param_stamp)):
         print("{}: already run".format(param_stamp))
     else:
         print("{}: ...running...".format(param_stamp))
         main_cl.run(args)
-    # -get average precision
-    fileName = '{}/prec-{}.txt'.format(args.r_dir, param_stamp)
+    # -get average accuracy
+    fileName = '{}/acc-{}.txt'.format(args.r_dir, param_stamp)
     file = open(fileName)
     ave = float(file.readline())
     file.close()
@@ -183,69 +183,69 @@ if __name__ == '__main__':
     ###---EWC + online EWC---###
 
     # -collect data
-    ave_prec_ewc = [BASE] + [EWC[ewc_lambda] for ewc_lambda in lamda_list]
-    ave_prec_per_lambda = [ave_prec_ewc]
+    ave_acc_ewc = [BASE] + [EWC[ewc_lambda] for ewc_lambda in lamda_list]
+    ave_acc_per_lambda = [ave_acc_ewc]
     for gamma in gamma_list:
-        ave_prec_temp = [BASE] + [OEWC[gamma][ewc_lambda] for ewc_lambda in lamda_list]
-        ave_prec_per_lambda.append(ave_prec_temp)
+        ave_acc_temp = [BASE] + [OEWC[gamma][ewc_lambda] for ewc_lambda in lamda_list]
+        ave_acc_per_lambda.append(ave_acc_temp)
     # -print on screen
     print("\n\nELASTIC WEIGHT CONSOLIDATION (EWC)")
     print(" param-list (lambda): {}".format(ext_lambda_list))
-    print("  {}".format(ave_prec_ewc))
-    print("--->  lambda = {}     --    {}".format(ext_lambda_list[np.argmax(ave_prec_ewc)], np.max(ave_prec_ewc)))
+    print("  {}".format(ave_acc_ewc))
+    print("--->  lambda = {}     --    {}".format(ext_lambda_list[np.argmax(ave_acc_ewc)], np.max(ave_acc_ewc)))
     if len(gamma_list) > 0:
         print("\n\nONLINE EWC")
         print(" param-list (lambda): {}".format(ext_lambda_list))
         curr_max = 0
         for gamma in gamma_list:
-            ave_prec_temp = [BASE] + [OEWC[gamma][ewc_lambda] for ewc_lambda in lamda_list]
-            print("  (gamma={}):   {}".format(gamma, ave_prec_temp))
-            if np.max(ave_prec_temp) > curr_max:
+            ave_acc_temp = [BASE] + [OEWC[gamma][ewc_lambda] for ewc_lambda in lamda_list]
+            print("  (gamma={}):   {}".format(gamma, ave_acc_temp))
+            if np.max(ave_acc_temp) > curr_max:
                 gamam_max = gamma
-                lamda_max = ext_lambda_list[np.argmax(ave_prec_temp)]
-                curr_max = np.max(ave_prec_temp)
+                lamda_max = ext_lambda_list[np.argmax(ave_acc_temp)]
+                curr_max = np.max(ave_acc_temp)
         print("--->  gamma = {}  -  lambda = {}     --    {}".format(gamam_max, lamda_max, curr_max))
 
 
     ###---SI---###
 
     # -collect data
-    ave_prec_si = [BASE] + [SI[c] for c in c_list]
+    ave_acc_si = [BASE] + [SI[c] for c in c_list]
     # -print on screen
     print("\n\nSYNAPTIC INTELLIGENCE (SI)")
     print(" param list (si_c): {}".format(ext_c_list))
-    print("  {}".format(ave_prec_si))
-    print("---> si_c = {}     --    {}".format(ext_c_list[np.argmax(ave_prec_si)], np.max(ave_prec_si)))
+    print("  {}".format(ave_acc_si))
+    print("---> si_c = {}     --    {}".format(ext_c_list[np.argmax(ave_acc_si)], np.max(ave_acc_si)))
 
 
     ###---Brain-Inspired Replay (BI-R)---###
 
     # -collect data
-    ave_prec_bir = [BIR[dg_prop][0.] for dg_prop in gating_list]
+    ave_acc_bir = [BIR[dg_prop][0.] for dg_prop in gating_list]
     # -print on screen
     print("\n\nBRAIN-INSPIRED REPLAY (BI-R)")
     print(" param-list (dg_prop): {}".format(gating_list))
-    print("  {}".format(ave_prec_bir))
-    print("--->  dg_prop = {}     --    {}".format(gating_list[np.argmax(ave_prec_bir)], np.max(ave_prec_bir)))
+    print("  {}".format(ave_acc_bir))
+    print("--->  dg_prop = {}     --    {}".format(gating_list[np.argmax(ave_acc_bir)], np.max(ave_acc_bir)))
 
 
     ###---BI-R + SI---###
 
     # -collect data
-    ave_prec_bir_per_c = []
+    ave_acc_bir_per_c = []
     for dg_prop in gating_list:
-        ave_prec_bir_per_c.append([BIR[dg_prop][c] for c in ext_c_list])
+        ave_acc_bir_per_c.append([BIR[dg_prop][c] for c in ext_c_list])
     # -print on screen
     print("\n\nBI-R & SI")
     print(" param-list (si_c): {}".format(ext_c_list))
     curr_max = 0
     for dg_prop in gating_list:
-        ave_prec_temp = [BIR[dg_prop][c] for c in ext_c_list]
-        print("  (dg-prop={}):   {}".format(dg_prop, ave_prec_temp))
-        if np.max(ave_prec_temp)>curr_max:
+        ave_acc_temp = [BIR[dg_prop][c] for c in ext_c_list]
+        print("  (dg-prop={}):   {}".format(dg_prop, ave_acc_temp))
+        if np.max(ave_acc_temp)>curr_max:
             dg_prop_max = dg_prop
-            si_max = ext_c_list[np.argmax(ave_prec_temp)]
-            curr_max = np.max(ave_prec_temp)
+            si_max = ext_c_list[np.argmax(ave_acc_temp)]
+            curr_max = np.max(ave_acc_temp)
     print("--->  dg_prop = {}  -  si_c = {}     --    {}".format(dg_prop_max, si_max, curr_max))
 
 
@@ -254,31 +254,31 @@ if __name__ == '__main__':
         ###---BI-R per component---###
 
         # -collect data
-        ave_prec_bir_no_rtf = [BIR_no_RTF[dg_prop] for dg_prop in gating_list]
-        ave_prec_bir_no_con = [BIR_no_CON[dg_prop] for dg_prop in gating_list]
-        ave_prec_bir_no_dis = [BIR_no_DIS[dg_prop] for dg_prop in gating_list]
-        ave_prec_gr_plus_gat = [GR_plus_GAT[dg_prop] for dg_prop in gating_list]
+        ave_acc_bir_no_rtf = [BIR_no_RTF[dg_prop] for dg_prop in gating_list]
+        ave_acc_bir_no_con = [BIR_no_CON[dg_prop] for dg_prop in gating_list]
+        ave_acc_bir_no_dis = [BIR_no_DIS[dg_prop] for dg_prop in gating_list]
+        ave_acc_gr_plus_gat = [GR_plus_GAT[dg_prop] for dg_prop in gating_list]
         # -print on screen
         print("\n\nBI-R minus REPLAY-THROUGH-FEEDBACK")
         print(" param-list (dg_prop): {}".format(gating_list))
-        print("  {}".format(ave_prec_bir_no_rtf))
-        print("--->  dg_prop = {}     --    {}".format(gating_list[np.argmax(ave_prec_bir_no_rtf)],
-                                                       np.max(ave_prec_bir_no_rtf)))
+        print("  {}".format(ave_acc_bir_no_rtf))
+        print("--->  dg_prop = {}     --    {}".format(gating_list[np.argmax(ave_acc_bir_no_rtf)],
+                                                       np.max(ave_acc_bir_no_rtf)))
         print("\n\nBI-R minus CONDITIONAL REPLAY")
         print(" param-list (dg_prop): {}".format(gating_list))
-        print("  {}".format(ave_prec_bir_no_con))
-        print("--->  dg_prop = {}     --    {}".format(gating_list[np.argmax(ave_prec_bir_no_con)],
-                                                       np.max(ave_prec_bir_no_con)))
+        print("  {}".format(ave_acc_bir_no_con))
+        print("--->  dg_prop = {}     --    {}".format(gating_list[np.argmax(ave_acc_bir_no_con)],
+                                                       np.max(ave_acc_bir_no_con)))
         print("\n\nBI-R minus DISTILLATION")
         print(" param-list (dg_prop): {}".format(gating_list))
-        print("  {}".format(ave_prec_bir_no_dis))
-        print("--->  dg_prop = {}     --    {}".format(gating_list[np.argmax(ave_prec_bir_no_dis)],
-                                                       np.max(ave_prec_bir_no_dis)))
+        print("  {}".format(ave_acc_bir_no_dis))
+        print("--->  dg_prop = {}     --    {}".format(gating_list[np.argmax(ave_acc_bir_no_dis)],
+                                                       np.max(ave_acc_bir_no_dis)))
         print("\n\nGR plus GATING BASED ON INTERNAL CONTEXT")
         print(" param-list (dg_prop): {}".format(gating_list))
-        print("  {}".format(ave_prec_gr_plus_gat))
-        print("--->  dg_prop = {}     --    {}".format(gating_list[np.argmax(ave_prec_gr_plus_gat)],
-                                                       np.max(ave_prec_gr_plus_gat)))
+        print("  {}".format(ave_acc_gr_plus_gat))
+        print("--->  dg_prop = {}     --    {}".format(gating_list[np.argmax(ave_acc_gr_plus_gat)],
+                                                       np.max(ave_acc_gr_plus_gat)))
     print('\n')
 
 
@@ -295,10 +295,10 @@ if __name__ == '__main__':
     ylabel = "Average accuracy (after all tasks)"
 
     # calculate limits y-axes (to have equal for all graphs)
-    full_list = [item for sublist in ave_prec_per_lambda for item in sublist] + ave_prec_si + \
-                [item for sublist in ave_prec_bir_per_c for item in sublist]
+    full_list = [item for sublist in ave_acc_per_lambda for item in sublist] + ave_acc_si + \
+                [item for sublist in ave_acc_bir_per_c for item in sublist]
     if args.per_bir_comp:
-        full_list += (ave_prec_bir_no_rtf + ave_prec_bir_no_con + ave_prec_bir_no_dis + ave_prec_gr_plus_gat)
+        full_list += (ave_acc_bir_no_rtf + ave_acc_bir_no_con + ave_acc_bir_no_dis + ave_acc_gr_plus_gat)
     miny = np.min(full_list)
     maxy = np.max(full_list)
     marginy = 0.1*(maxy-miny)
@@ -314,7 +314,7 @@ if __name__ == '__main__':
         colors = ["darkgreen"]
         colors += get_cmap('Greens')(np.linspace(0.7, 0.3, len(gamma_list))).tolist()
         # - make plot (line plot - only average)
-        figure = my_plt.plot_lines(ave_prec_per_lambda, x_axes=[0] + lamda_list, ylabel=ylabel,
+        figure = my_plt.plot_lines(ave_acc_per_lambda, x_axes=[0] + lamda_list, ylabel=ylabel,
                                    line_names=["EWC"] + ["Online EWC - gamma = {}".format(gamma) for gamma in gamma_list],
                                    title=title, x_log=True, xlabel="EWC: lambda (log-scale)",
                                    ylim=(miny-marginy, maxy+marginy),
@@ -323,14 +323,14 @@ if __name__ == '__main__':
 
 
     ###---SI---###
-    figure = my_plt.plot_lines([ave_prec_si], x_axes=[0] + c_list, ylabel=ylabel, line_names=["SI"],
+    figure = my_plt.plot_lines([ave_acc_si], x_axes=[0] + c_list, ylabel=ylabel, line_names=["SI"],
                             colors=["yellowgreen"], title=title, x_log=True, xlabel="SI: c (log-scale)", with_dots=True,
                             ylim=(miny-marginy, maxy+marginy), h_line=BASE, h_label="None")
     figure_list.append(figure)
 
 
     ###---Brain-Inspired Replay---###
-    figure = my_plt.plot_lines([ave_prec_bir], x_axes=gating_list, ylabel=ylabel,
+    figure = my_plt.plot_lines([ave_acc_bir], x_axes=gating_list, ylabel=ylabel,
                                line_names=["Brain-Inspired Replay (BI-R)"],
                                colors=["purple"], title=title, x_log=False, xlabel="Context gates: % of nodes gated",
                                with_dots=True, ylim=(miny-marginy, maxy+marginy), h_lines=[BASE], h_labels=["None"],
@@ -342,7 +342,7 @@ if __name__ == '__main__':
     # - select colors
     colors = get_cmap('Blues_r')(np.linspace(0.6, 0., len(gating_list))).tolist()
     # - make plot (line plot - only average)
-    figure = my_plt.plot_lines(ave_prec_bir_per_c, x_axes=[0] + c_list, ylabel=ylabel,
+    figure = my_plt.plot_lines(ave_acc_bir_per_c, x_axes=[0] + c_list, ylabel=ylabel,
                                line_names=["BI-R, gate-prop = {}".format(dg_prop) for dg_prop in gating_list],
                                title=title, x_log=True, xlabel="BI-R + SI: c (log-scale)",
                                ylim=(miny-marginy, maxy+marginy),
@@ -352,7 +352,7 @@ if __name__ == '__main__':
 
     ###---BI-R per component---###
     if args.per_bir_comp:
-        figure = my_plt.plot_lines([ave_prec_bir_no_rtf, ave_prec_bir_no_con, ave_prec_bir_no_dis, ave_prec_gr_plus_gat],
+        figure = my_plt.plot_lines([ave_acc_bir_no_rtf, ave_acc_bir_no_con, ave_acc_bir_no_dis, ave_acc_gr_plus_gat],
                                    x_axes=gating_list, ylabel=ylabel,
                                    line_names=["BI-R - rtf", "BI-R - con", "BI-R - dis", "GR + gat"],
                                    colors=["maroon", "red", "green", "darkorange"], title=title, x_log=False,

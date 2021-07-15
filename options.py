@@ -55,9 +55,9 @@ def add_eval_options(parser, single_task=False, generative=False, compare_code="
         eval.add_argument('--log-per-task', action='store_true', help="set all visdom-logs to [iters]")
     if compare_code=="none":
         eval.add_argument('--loss-log', type=int, default=500, metavar="N", help="# iters after which to plot loss")
-        eval.add_argument('--prec-log', type=int, default=None if single_task else 500, metavar="N",
-                          help="# iters after which to plot precision")
-    eval.add_argument('--prec-n', type=int, default=1024, help="# samples for evaluating accuracy (visdom-plots)")
+        eval.add_argument('--acc-log', type=int, default=None if single_task else 500, metavar="N",
+                          help="# iters after which to plot accuracy")
+    eval.add_argument('--acc-n', type=int, default=1024, help="# samples for evaluating accuracy (visdom-plots)")
     if compare_code=="none" and generative:
             eval.add_argument('--sample-log', type=int, default=1000, metavar="N",
                               help="# iters after which to plot samples")
@@ -352,7 +352,7 @@ def set_defaults(args, only_MNIST=False, single_task=False, generative=True, com
     if not single_task:
         args.log_per_task = True if (not compare_code=="none") else args.log_per_task
     if checkattr(args, 'log_per_task'):
-        args.prec_log = args.iters
+        args.acc_log = args.iters
         args.loss_log = args.iters
         args.sample_log = args.iters
     return args

@@ -38,13 +38,13 @@ def get_result(args):
     # -get param-stamp
     param_stamp = get_param_stamp_from_args(args)
     # -check whether already run, and if not do so
-    if os.path.isfile('{}/prec-{}.txt'.format(args.r_dir, param_stamp)):
+    if os.path.isfile('{}/acc-{}.txt'.format(args.r_dir, param_stamp)):
         print("{}: already run".format(param_stamp))
     else:
         print("{}: ...running...".format(param_stamp))
         main_cl.run(args)
-    # -get average precision
-    fileName = '{}/prec-{}.txt'.format(args.r_dir, param_stamp)
+    # -get average accuracy
+    fileName = '{}/acc-{}.txt'.format(args.r_dir, param_stamp)
     file = open(fileName)
     ave = float(file.readline())
     file.close()

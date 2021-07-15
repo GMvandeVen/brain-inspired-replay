@@ -35,13 +35,13 @@ def get_results(args):
     # -get param-stamp
     param_stamp = get_param_stamp_from_args(args)
     # -check whether already run, and if not do so
-    if os.path.isfile("{}/prec-{}.txt".format(args.r_dir, param_stamp)):
+    if os.path.isfile("{}/acc-{}.txt".format(args.r_dir, param_stamp)):
         print("{}: already run".format(param_stamp))
     else:
         print("{}: ...running...".format(param_stamp))
         main_cl.run(args)
-    # -get average precisions
-    fileName = '{}/prec-{}.txt'.format(args.r_dir, param_stamp)
+    # -get average accuracies
+    fileName = '{}/acc-{}.txt'.format(args.r_dir, param_stamp)
     file = open(fileName)
     ave = float(file.readline())
     file.close()
@@ -256,13 +256,13 @@ if __name__ == '__main__':
     #----- COLLECT RESULTS -----#
     #---------------------------#
 
-    ave_prec_bir = {}
-    ave_prec_sg = {}
+    ave_acc_bir = {}
+    ave_acc_sg = {}
 
     ## Create lists for all extracted <dicts> and <lists> with fixed order
     for seed in seed_list:
-        ave_prec_bir[seed] = [BIR[seed], BIR_nF[seed], BIR_nC[seed], BIR_nG[seed], BIR_nD[seed]]
-        ave_prec_sg[seed] = [SGR[seed], SGR_wF[seed], SGR_wC[seed], SGR_wG[seed], SGR_wD[seed]]
+        ave_acc_bir[seed] = [BIR[seed], BIR_nF[seed], BIR_nC[seed], BIR_nG[seed], BIR_nD[seed]]
+        ave_acc_sg[seed] = [SGR[seed], SGR_wF[seed], SGR_wC[seed], SGR_wG[seed], SGR_wD[seed]]
 
 
     #-------------------------------------------------------------------------------------------------#
@@ -293,7 +293,7 @@ if __name__ == '__main__':
     ylabel = "Average test accuracy (over all {} permutations)".format(args.tasks)
     title = "AVERAGE TEST ACCURACY (in %)"
     print("\n{}\n".format(title)+"-"*60)
-    figure = barplots(ave_prec_sg, ave_prec_bir, names_sg, names_bir, ids, colors, seed_list, only_last_dir=ONLYLAST,
+    figure = barplots(ave_acc_sg, ave_acc_bir, names_sg, names_bir, ids, colors, seed_list, only_last_dir=ONLYLAST,
                       chance_level=10, long_names1=long_names_sg, long_names2=long_names_bir,
                       ylabel=ylabel, title=title, ylim=None, perc=True)
     figure_list.append(figure)

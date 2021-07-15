@@ -267,10 +267,10 @@ def run(args, verbose=False):
     ] if ((train_gen or utils.checkattr(args, 'feedback')) and not no_samples) else [None]
 
     # Callbacks for reporting and visualizing accuracy, and visualizing representation extracted by main model
-    # -visdom (i.e., after each [prec_log]
+    # -visdom (i.e., after each [acc_log]
     eval_cb = cb._eval_cb(
-        log=args.prec_log, test_datasets=test_datasets, visdom=visdom, progress_dict=None, iters_per_task=args.iters,
-        test_size=args.prec_n, classes_per_task=classes_per_task, scenario=args.scenario,
+        log=args.acc_log, test_datasets=test_datasets, visdom=visdom, progress_dict=None, iters_per_task=args.iters,
+        test_size=args.acc_n, classes_per_task=classes_per_task, scenario=args.scenario,
     )
     # -pdf / reporting: summary plots (i.e, only after each task)
     eval_cb_full = cb._eval_cb(
@@ -345,24 +345,24 @@ def run(args, verbose=False):
         print("\n\nEVALUATION RESULTS:")
 
     # Evaluate accuracy of final model on full test-set
-    precs = [evaluate.validate(
+    accs = [evaluate.validate(
         model, test_datasets[i], verbose=False, test_size=None, task=i+1,
         allowed_classes=list(range(classes_per_task*i, classes_per_task*(i+1))) if args.scenario=="task" else None
     ) for i in range(args.tasks)]
-    average_precs = sum(precs)/args.tasks
+    average_accs = sum(accs)/args.tasks
     # -print on screen
     if verbose:
         print("\n Accuracy of final model on test-set:")
         for i in range(args.tasks):
             print(" - {} {}: {:.4f}".format("For classes from task" if args.scenario=="class" else "Task",
-                                            i + 1, precs[i]))
+                                            i + 1, accs[i]))
         print('=> Average accuracy over all {} {}: {:.4f}\n'.format(
             args.tasks*classes_per_task if args.scenario=="class" else args.tasks,
-            "classes" if args.scenario=="class" else "tasks", average_precs
+            "classes" if args.scenario=="class" else "tasks", average_accs
         ))
     # -write out to text file
-    output_file = open("{}/prec-{}.txt".format(args.r_dir, param_stamp), 'w')
-    output_file.write('{}\n'.format(average_precs))
+    output_file = open("{}/acc-{}.txt".format(args.r_dir, param_stamp), 'w')
+    output_file.write('{}\n'.format(average_accs))
     output_file.close()
 
 

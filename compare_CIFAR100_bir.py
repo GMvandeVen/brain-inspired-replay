@@ -32,14 +32,14 @@ def get_results(args):
     # -get param-stamp
     param_stamp = get_param_stamp_from_args(args)
     # -check whether already run, and if not do so
-    if os.path.isfile("{}/prec-{}.txt".format(args.r_dir, param_stamp)):
+    if os.path.isfile("{}/acc-{}.txt".format(args.r_dir, param_stamp)):
         print("{}: already run".format(param_stamp))
     else:
         print("{}: ...running...".format(param_stamp))
         args.train = True
         main_cl.run(args)
-    # -get average precisions
-    fileName = '{}/prec-{}.txt'.format(args.r_dir, param_stamp)
+    # -get average accuracies
+    fileName = '{}/acc-{}.txt'.format(args.r_dir, param_stamp)
     file = open(fileName)
     ave = float(file.readline())
     file.close()
@@ -51,7 +51,7 @@ def get_gen_results(args):
     param_stamp = get_param_stamp_from_args(args)
     # -check whether already run, and if not do so
     eval_tag = "" if args.eval_tag=="none" else "-{}".format(args.eval_tag)
-    if not os.path.isfile("{}/prec-{}.txt".format(args.r_dir, param_stamp)):
+    if not os.path.isfile("{}/acc-{}.txt".format(args.r_dir, param_stamp)):
         print("{}: ...running...".format(param_stamp))
         args.train = True
         main_cl.run(args)
@@ -62,8 +62,8 @@ def get_gen_results(args):
         print("{}: ...running evaluation only...".format(param_stamp))
         args.train = False
         main_cl.run(args)
-    # -get average precisions
-    fileName = '{}/prec-{}.txt'.format(args.r_dir, param_stamp)
+    # -get average accuracies
+    fileName = '{}/acc-{}.txt'.format(args.r_dir, param_stamp)
     file = open(fileName)
     ave = float(file.readline())
     file.close()

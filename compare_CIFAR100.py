@@ -39,8 +39,8 @@ def get_results(args):
     else:
         print("{}: ...running...".format(param_stamp))
         main_cl.run(args)
-    # -get average precisions
-    fileName = '{}/prec-{}.txt'.format(args.r_dir, param_stamp)
+    # -get average accuracies
+    fileName = '{}/acc-{}.txt'.format(args.r_dir, param_stamp)
     file = open(fileName)
     ave = float(file.readline())
     file.close()
@@ -177,21 +177,21 @@ if __name__ == '__main__':
     #----- COLLECT RESULTS -----#
     #---------------------------#
 
-    prec = {}
-    ave_prec = {}
+    acc = {}
+    ave_acc = {}
 
     ## Create lists for all extracted <dicts> and <lists> with fixed order
     for seed in seed_list:
 
         i = 0
-        prec[seed] = [
+        acc[seed] = [
             OFF[seed][i]["average"], NONE[seed][i]["average"],
             LWF[seed][i]["average"], GR[seed][i]["average"],
             EWC[seed][i]["average"], SI[seed][i]["average"],
             BIR[seed][i]["average"], BIRpSI[seed][i]["average"] if args.scenario=="class" else 0,
         ]
         i = 1
-        ave_prec[seed] = [
+        ave_acc[seed] = [
             OFF[seed][i], NONE[seed][i],
             LWF[seed][i], GR[seed][i],
             EWC[seed][i], SI[seed][i],
@@ -208,8 +208,8 @@ if __name__ == '__main__':
     plot_name = "summary-{}{}-{}".format(args.experiment, args.tasks, args.scenario)
     scheme = "incremental {} learning".format(args.scenario)
     title = "{}  -  {}".format(args.experiment, scheme)
-    ylabel_all = "Average precision (after all tasks)"
-    ylabel = "Average precision (on tasks seen so far)"
+    ylabel_all = "Average accuracy (after all tasks)"
+    ylabel = "Average accuracy (on tasks seen so far)"
     x_axes = GR[args.seed][0]["x_task"]
 
     # select names / colors / ids
@@ -228,9 +228,9 @@ if __name__ == '__main__':
 
 
     # bar-plot
-    means = [np.mean([ave_prec[seed][id] for seed in seed_list]) for id in ids]
+    means = [np.mean([ave_acc[seed][id] for seed in seed_list]) for id in ids]
     if args.n_seeds>1:
-        sems = [np.sqrt(np.var([ave_prec[seed][id] for seed in seed_list])/(len(seed_list)-1)) for id in ids]
+        sems = [np.sqrt(np.var([ave_acc[seed][id] for seed in seed_list])/(len(seed_list)-1)) for id in ids]
     figure = plt.plot_bar(means, names=names, colors=colors, ylabel="Test accuracy (after all 10 tasks)", title=title,
                           yerr=sems if args.n_seeds>1 else None, ylim=(0,1))
     figure_list.append(figure)
@@ -250,8 +250,8 @@ if __name__ == '__main__':
     for id in ids:
         new_ave_line = []
         new_sem_line = []
-        for line_id in range(len(prec[args.seed][id])):
-            all_entries = [prec[seed][id][line_id] for seed in seed_list]
+        for line_id in range(len(acc[args.seed][id])):
+            all_entries = [acc[seed][id][line_id] for seed in seed_list]
             new_ave_line.append(np.mean(all_entries))
             if args.n_seeds>1:
                 new_sem_line.append(np.sqrt(np.var(all_entries)/(len(all_entries)-1)))

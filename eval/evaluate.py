@@ -80,7 +80,7 @@ def test_accuracy(model, datasets, current_task, iteration, classes_per_task=Non
 
     # Evaluate accuracy of model predictions for all tasks so far (reporting "0" for future tasks)
     n_tasks = len(datasets)
-    precs = []
+    accs = []
     for i in range(n_tasks):
         if i+1 <= current_task:
             if scenario=='task':
@@ -89,36 +89,36 @@ def test_accuracy(model, datasets, current_task, iteration, classes_per_task=Non
                 allowed_classes = list(range(classes_per_task*(current_task)))
             else:
                 allowed_classes = None
-            precs.append(validate(model, datasets[i], test_size=test_size, verbose=verbose,
+            accs.append(validate(model, datasets[i], test_size=test_size, verbose=verbose,
                                   allowed_classes=allowed_classes, no_task_mask=no_task_mask, task=i+1))
         else:
-            precs.append(0)
-    average_precs = sum(
-        [precs[task_id] if task_id==0 else precs[task_id] for task_id in range(current_task)]
+            accs.append(0)
+    average_accs = sum(
+        [accs[task_id] if task_id==0 else accs[task_id] for task_id in range(current_task)]
     ) / (current_task)
 
     # Print results on screen
     if verbose:
-        print(' => ave accuracy: {:.3f}'.format(average_precs))
+        print(' => ave accuracy: {:.3f}'.format(average_accs))
 
     # Send results to visdom server
     names = ['task {}'.format(i + 1) for i in range(n_tasks)]
     if visdom is not None:
         visual.visdom.visualize_scalars(
-            scalars=precs, names=names, iteration=iteration,
+            scalars=accs, names=names, iteration=iteration,
             title="Accuracy per task ({})".format(visdom["graph"]), env=visdom["env"], ylabel="accuracy"
         )
         if n_tasks>1:
             visual.visdom.visualize_scalars(
-                scalars=[average_precs], names=["ave accuracy"], iteration=iteration,
+                scalars=[average_accs], names=["ave accuracy"], iteration=iteration,
                 title="Average accuracy ({})".format(visdom["graph"]), env=visdom["env"], ylabel="accuracy"
             )
 
     # Append results to [progress]-dictionary and return
     if progress_dict is not None:
         for task_id, _ in enumerate(names):
-            progress_dict["all_tasks"][task_id].append(precs[task_id])
-        progress_dict["average"].append(average_precs)
+            progress_dict["all_tasks"][task_id].append(accs[task_id])
+        progress_dict["average"].append(average_accs)
         progress_dict["x_iteration"].append(iteration)
         progress_dict["x_task"].append(current_task)
     return progress_dict
